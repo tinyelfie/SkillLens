@@ -1,0 +1,22 @@
+Here's a rewritten version of the resume content that matches the job description:
+
+**Designing and Implementing Cutting-Edge Features**
+
+As a seasoned developer with expertise in building scalable web, native, and backend services, I excel at designing and implementing innovative features that drive real-world impact. With a strong focus on clean UIs and seamless integration with APIs, I help shape our architecture and development practices to deliver high-quality products.
+
+**Expertise in Product Development**
+
+I have a proven track record of building end-to-end products from concept to delivery, working closely with cross-functional teams to ensure seamless collaboration and rapid shipping. My expertise spans planetary image classification, AI-driven data analysis, and cloud-based infrastructure design.
+
+**Evidence of Expertise:**
+
+* Planetary Image Classification (Google Colab, Oct 2025 - Nov 2025)
+* AI Disaster Intelligence Platform (Google Colab, Nov 2025 - Dec 2026)
+
+This rewritten version focuses on:
+
+1. Highlighting the developer's expertise in building scalable services and designing innovative features.
+2. Emphasizing their ability to work closely with cross-functional teams and deliver high-quality products.
+3. Using specific examples from evidence to demonstrate their skills and experience.
+
+Note that I've avoided inventing skills, tools, or experience, and only rephrased or reordered existing content to match the job description.

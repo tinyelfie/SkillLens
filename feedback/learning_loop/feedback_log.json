@@ -1,0 +1,32 @@
+[
+  {
+    "timestamp": "2026-01-19T18:09:50.915579",
+    "score": {
+      "skill_similarity": 0.0,
+      "skill_coverage": 0.0,
+      "experience_alignment": 0.0,
+      "final_score": 0.0
+    },
+    "accepted": true
+  },
+  {
+    "timestamp": "2026-01-19T18:10:16.764826",
+    "score": {
+      "skill_similarity": 0.0,
+      "skill_coverage": 0.0,
+      "experience_alignment": 0.0,
+      "final_score": 0.0
+    },
+    "accepted": false
+  },
+  {
+    "timestamp": "2026-01-19T19:04:56.577584",
+    "score": {
+      "skill_similarity": 0.0,
+      "skill_coverage": 0.0,
+      "experience_alignment": 0.0,
+      "final_score": 0.0
+    },
+    "accepted": true
+  }
+]

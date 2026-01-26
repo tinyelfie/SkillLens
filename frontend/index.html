@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LLM‑RAG ATS Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            tea: '#ccd5ae',
+            beige: '#e9edc9',
+            cornsilk: '#fefae0',
+            papaya: '#faedcd',
+            bronze: '#d4a373',
+            blush: '#ffb5a7',
+            almond: '#fcd5ce',
+            seashell: '#f8edeb',
+            petal: '#f9dcc4',
+            peach: '#fec89a'
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-cornsilk min-h-screen text-gray-800">
+
+  <!-- Header -->
+  <header class="px-8 py-6 flex justify-between items-center">
+    <h1 class="text-2xl font-semibold">LLM‑RAG ATS</h1>
+    <span class="text-sm bg-beige px-4 py-1 rounded-full">Resume Analyzer</span>
+  </header>
+
+  <!-- Main Layout -->
+  <main class="px-8 grid grid-cols-12 gap-6">
+
+    <!-- Upload Panel -->
+    <section class="col-span-4 bg-papaya rounded-2xl p-6 shadow-sm">
+      <h2 class="text-lg font-medium mb-4">Upload Documents</h2>
+
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm mb-1">Resume</label>
+          <input type="file" class="w-full text-sm" />
+        </div>
+        <div>
+          <label class="block text-sm mb-1">Job Description</label>
+          <input type="file" class="w-full text-sm" />
+        </div>
+        <button class="w-full mt-4 bg-bronze text-white py-2 rounded-xl hover:opacity-90">
+          Analyze Resume
+        </button>
+      </div>
+    </section>
+
+    <!-- Score Panel -->
+    <section class="col-span-8 bg-beige rounded-2xl p-6 shadow-sm">
+      <h2 class="text-lg font-medium mb-4">Match Overview</h2>
+
+      <div class="grid grid-cols-3 gap-4">
+        <div class="bg-seashell p-4 rounded-xl">
+          <p class="text-sm">Match Score</p>
+          <p class="text-3xl font-semibold mt-2">82%</p>
+        </div>
+        <div class="bg-seashell p-4 rounded-xl">
+          <p class="text-sm">Missing Skills</p>
+          <p class="text-3xl font-semibold mt-2">3</p>
+        </div>
+        <div class="bg-seashell p-4 rounded-xl">
+          <p class="text-sm">Processing Time</p>
+          <p class="text-3xl font-semibold mt-2">430ms</p>
+        </div>
+      </div>
+
+      <!-- Missing Skills -->
+      <div class="mt-6">
+        <h3 class="text-md font-medium mb-2">Skill Gaps</h3>
+        <div class="flex flex-wrap gap-2">
+          <span class="bg-blush text-sm px-3 py-1 rounded-full">Docker</span>
+          <span class="bg-blush text-sm px-3 py-1 rounded-full">FastAPI</span>
+          <span class="bg-blush text-sm px-3 py-1 rounded-full">AWS</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Optimized Resume -->
+    <section class="col-span-12 bg-petal rounded-2xl p-6 shadow-sm mt-2">
+      <div class="flex justify-between items-center mb-3">
+        <h2 class="text-lg font-medium">Optimized Resume</h2>
+        <button class="bg-peach px-4 py-1 rounded-full text-sm">Download</button>
+      </div>
+      <div class="bg-white rounded-xl p-4 text-sm leading-relaxed max-h-64 overflow-y-auto">
+        <p>
+          Experienced Machine Learning Engineer with strong expertise in Python,
+          FastAPI, and data‑driven systems. Proven ability to design scalable ML
+          pipelines and deploy production‑ready services...
+        </p>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    const analyzeBtn = document.querySelector("button");
+    const resumeInput = document.querySelectorAll("input[type='file']")[0];
+    const jdInput = document.querySelectorAll("input[type='file']")[1];
+
+    analyzeBtn.addEventListener("click", async () => {
+      if (!resumeInput.files[0] || !jdInput.files[0]) {
+        alert("Please upload both Resume and Job Description");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("resume", resumeInput.files[0]);
+      formData.append("jd", jdInput.files[0]);
+
+      analyzeBtn.innerText = "Analyzing...";
+      analyzeBtn.disabled = true;
+
+      try {
+        const response = await fetch("http://localhost:8000/analyze-files", {
+          method: "POST",
+          body: formData
+        });
+
+        if (!response.ok) throw new Error("Analysis failed");
+
+        const data = await response.json();
+
+        // Update UI
+        document.querySelector(".text-3xl").innerText = `${Math.round(data.score.overall || 0)}%`;
+        document.querySelectorAll(".text-3xl")[1].innerText = data.missing_skills.length;
+        document.querySelectorAll(".text-3xl")[2].innerText = `${data.processing_time_ms}ms`;
+
+        const skillsContainer = document.querySelector(".flex.flex-wrap");
+        skillsContainer.innerHTML = "";
+        data.missing_skills.forEach(skill => {
+          const span = document.createElement("span");
+          span.className = "bg-blush text-sm px-3 py-1 rounded-full";
+          span.innerText = skill;
+          skillsContainer.appendChild(span);
+        });
+
+        document.querySelector(".bg-white p").innerText = data.optimized_resume;
+
+      } catch (err) {
+        alert(err.message);
+      } finally {
+        analyzeBtn.innerText = "Analyze Resume";
+        analyzeBtn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
