@@ -1,0 +1,25 @@
+{
+  "name": null,
+  "summary": null,
+  "skills": ["AI", "Disaster Intelligence", "Python"],
+  "education": [
+    "Bachelor of Technology in Computer Science and Engineering",
+    "DIT University, Dehradun, Uttarakhand"
+  ],
+  "experience": [
+    {
+      "role": "AI Disaster Intelligence Platform",
+      "company": "Google Colab",
+      "duration": "Nov 2025 - Dec 2026"
+    },
+    {
+      "role": "Planetary Image Classification",
+      "company": "Google Colab",
+      "duration": "Oct 2025 - Nov 2025"
+    }
+  ],
+  "projects": [
+    "AI Disaster Intelligence Platform",
+    "Planetary Image Classification"
+  ]
+}
