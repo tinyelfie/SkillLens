@@ -1,3 +1,5 @@
+import json
+import re
 from llm.llm_interface import call_llm
 
 JUDGE_PROMPT = """
@@ -34,8 +36,6 @@ JOB DESCRIPTION:
         temperature=0.0,
         max_new_tokens=300
     )
-
-import re
 
 def extract_json(text):
     match = re.search(r"\{.*\}", text, re.S)

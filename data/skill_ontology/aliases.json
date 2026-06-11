@@ -1,0 +1,13 @@
+{
+  "ml": "Machine Learning",
+  "machine learning": "Machine Learning",
+  "dl": "Deep Learning",
+  "deep learning": "Deep Learning",
+  "ai": "Artificial Intelligence",
+  "artificial intelligence": "Artificial Intelligence",
+  "nlp": "Natural Language Processing",
+  "cv": "Computer Vision",
+  "pytorch lightning": "PyTorch",
+  "tf": "TensorFlow",
+  "postgres": "PostgreSQL"
+}

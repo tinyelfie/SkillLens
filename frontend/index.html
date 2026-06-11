@@ -3,114 +3,502 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>LLM‑RAG ATS Dashboard</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            tea: '#ccd5ae',
-            beige: '#e9edc9',
-            cornsilk: '#fefae0',
-            papaya: '#faedcd',
-            bronze: '#d4a373',
-            blush: '#ffb5a7',
-            almond: '#fcd5ce',
-            seashell: '#f8edeb',
-            petal: '#f9dcc4',
-            peach: '#fec89a'
-          }
-        }
-      }
+  <meta name="description" content="SkillLens — AI-powered resume and job description analyzer. Find skill gaps and get an optimized resume instantly." />
+  <title>SkillLens — Resume Analyzer</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=Fira+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ─── Design Tokens ─────────────────────────────────────────── */
+    :root {
+      --bg:        #FAFAF5;   /* Mist White  */
+      --primary:   #A8DADC;   /* Dusty Blue  */
+      --secondary: #CDEAC0;   /* Sage        */
+      --accent:    #F7CAD0;   /* Soft Rose   */
+      --text:      #33415C;   /* Navy Slate  */
+      --surface:   #FFFFFF;
+      --border:    #E2E5EB;
+      --subtle:    #6B7A99;
+      --radius:    10px;
     }
-  </script>
+
+    /* ─── Reset ─────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ─── Header ────────────────────────────────────────────────── */
+    header {
+      background: var(--surface);
+      border-bottom: 2px solid var(--primary);
+      padding: 18px 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.6rem;
+      color: var(--text);
+      letter-spacing: -0.02em;
+    }
+
+    .logo span { color: var(--primary); }
+
+    .header-badge {
+      font-family: 'Fira Mono', monospace;
+      font-size: 0.7rem;
+      font-weight: 500;
+      background: var(--secondary);
+      color: var(--text);
+      padding: 5px 14px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    /* ─── Main Grid ─────────────────────────────────────────────── */
+    main {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 32px;
+      max-width: 1100px;
+      width: 100%;
+      margin: 40px auto;
+      padding: 0 32px;
+    }
+
+    /* ─── Panel Base ─────────────────────────────────────────────── */
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+    }
+
+    .panel-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.15rem;
+      color: var(--text);
+      margin-bottom: 24px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* ─── Upload Panel ───────────────────────────────────────────── */
+    .upload-panel { align-self: start; }
+
+    .field + .field { margin-top: 20px; }
+
+    .field label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--subtle);
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      margin-bottom: 8px;
+    }
+
+    .file-drop {
+      border: 1.5px dashed var(--border);
+      border-radius: var(--radius);
+      padding: 18px 14px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      background: var(--bg);
+    }
+
+    .file-drop:hover, .file-drop.has-file {
+      border-color: var(--primary);
+      background: #EEF8F9;
+    }
+
+    .file-drop input[type="file"] {
+      display: none;
+    }
+
+    .file-drop-label {
+      font-size: 0.82rem;
+      color: var(--subtle);
+      cursor: pointer;
+      display: block;
+    }
+
+    .file-drop.has-file .file-drop-label {
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .choose-link {
+      color: var(--text);
+      font-weight: 600;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    .btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      margin-top: 28px;
+      padding: 14px;
+      background: var(--primary);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      border: none;
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: opacity 0.2s, box-shadow 0.2s;
+      letter-spacing: 0.01em;
+    }
+
+    .btn:hover:not(:disabled) { opacity: 0.88; box-shadow: 0 2px 8px rgba(168,218,220,0.5); }
+    .btn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+    .spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid var(--text);
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      display: none;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ─── Results Side ───────────────────────────────────────────── */
+    .results-col {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* ─── Empty State ─────────────────────────────────────────────── */
+    #empty-state {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 64px 32px;
+      text-align: center;
+      background: var(--surface);
+    }
+
+    .empty-icon {
+      width: 48px;
+      height: 48px;
+      background: var(--secondary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+    }
+
+    .empty-icon svg { width: 22px; height: 22px; stroke: var(--text); }
+
+    #empty-state h3 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.1rem;
+      margin-bottom: 8px;
+    }
+
+    #empty-state p {
+      font-size: 0.85rem;
+      color: var(--subtle);
+      max-width: 300px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    /* ─── Error State ─────────────────────────────────────────────── */
+    #error-state {
+      border: 1px solid var(--accent);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      background: #FEF4F5;
+      display: none;
+    }
+
+    #error-state p {
+      font-size: 0.85rem;
+      color: #A03040;
+      line-height: 1.6;
+    }
+
+    #error-state strong {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: #7B2030;
+    }
+
+    /* ─── Score Panel ─────────────────────────────────────────────── */
+    #results-container { display: none; flex-direction: column; gap: 24px; }
+
+    .score-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .score-card {
+      border-radius: var(--radius);
+      padding: 20px 16px;
+      text-align: center;
+      border: 1px solid var(--border);
+      background: var(--bg);
+    }
+
+    .score-card .label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--subtle);
+      margin-bottom: 10px;
+    }
+
+    .score-card .value {
+      font-family: 'DM Serif Display', serif;
+      font-size: 2.2rem;
+      color: var(--text);
+      line-height: 1;
+    }
+
+    .score-card.primary .value { color: var(--text); background: var(--secondary); padding: 6px 0; border-radius: 6px; }
+    .score-card.danger .value { color: var(--text); }
+
+    /* ─── Skill Gaps ──────────────────────────────────────────────── */
+    .section-label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--subtle);
+      margin-bottom: 12px;
+    }
+
+    #skills-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .skill-pill {
+      font-family: 'Fira Mono', monospace;
+      font-size: 0.75rem;
+      font-weight: 500;
+      background: var(--accent);
+      color: var(--text);
+      padding: 5px 12px;
+      border-radius: 4px;
+    }
+
+    /* ─── Optimized Resume ────────────────────────────────────────── */
+    .resume-box {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      max-height: 340px;
+      overflow-y: auto;
+      font-family: 'Fira Mono', monospace;
+      font-size: 0.78rem;
+      line-height: 1.8;
+      white-space: pre-wrap;
+      color: var(--text);
+    }
+
+    .resume-box::-webkit-scrollbar { width: 5px; }
+    .resume-box::-webkit-scrollbar-track { background: transparent; }
+    .resume-box::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    /* ─── Footer ─────────────────────────────────────────────────── */
+    footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 0.75rem;
+      color: var(--subtle);
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+    }
+
+    /* ─── Utility ─────────────────────────────────────────────────── */
+    .hidden { display: none !important; }
+
+    @media (max-width: 760px) {
+      main { grid-template-columns: 1fr; padding: 0 16px; }
+      header { padding: 16px 20px; }
+      .score-grid { grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
-<body class="bg-cornsilk min-h-screen text-gray-800">
+<body>
 
   <!-- Header -->
-  <header class="px-8 py-6 flex justify-between items-center">
-    <h1 class="text-2xl font-semibold">LLM‑RAG ATS</h1>
-    <span class="text-sm bg-beige px-4 py-1 rounded-full">Resume Analyzer</span>
+  <header>
+    <span class="logo">SkillLens<span>.</span></span>
+    <span class="header-badge">Resume Analyzer</span>
   </header>
 
-  <!-- Main Layout -->
-  <main class="px-8 grid grid-cols-12 gap-6">
+  <!-- Main -->
+  <main>
 
     <!-- Upload Panel -->
-    <section class="col-span-4 bg-papaya rounded-2xl p-6 shadow-sm">
-      <h2 class="text-lg font-medium mb-4">Upload Documents</h2>
+    <section class="panel upload-panel" aria-label="Upload Documents">
+      <h2 class="panel-title">Upload Documents</h2>
 
-      <div class="space-y-4">
-        <div>
-          <label class="block text-sm mb-1">Resume</label>
-          <input type="file" class="w-full text-sm" />
+      <div class="field">
+        <label for="resume-file">Resume</label>
+        <div class="file-drop" id="resume-drop">
+          <input type="file" id="resume-file" accept=".pdf,.docx" />
+          <label class="file-drop-label" for="resume-file" id="resume-label">
+            <span class="choose-link">Choose file</span> or drag here<br>
+            <span style="font-size:0.75rem; opacity:0.7;">PDF or DOCX</span>
+          </label>
         </div>
-        <div>
-          <label class="block text-sm mb-1">Job Description</label>
-          <input type="file" class="w-full text-sm" />
-        </div>
-        <button class="w-full mt-4 bg-bronze text-white py-2 rounded-xl hover:opacity-90">
-          Analyze Resume
-        </button>
       </div>
+
+      <div class="field">
+        <label for="jd-file">Job Description</label>
+        <div class="file-drop" id="jd-drop">
+          <input type="file" id="jd-file" accept=".pdf,.docx" />
+          <label class="file-drop-label" for="jd-file" id="jd-label">
+            <span class="choose-link">Choose file</span> or drag here<br>
+            <span style="font-size:0.75rem; opacity:0.7;">PDF or DOCX</span>
+          </label>
+        </div>
+      </div>
+
+      <button class="btn" id="analyze-btn" type="button">
+        <span class="spinner" id="spinner"></span>
+        <span id="btn-text">Analyze Resume</span>
+      </button>
     </section>
 
-    <!-- Score Panel -->
-    <section class="col-span-8 bg-beige rounded-2xl p-6 shadow-sm">
-      <h2 class="text-lg font-medium mb-4">Match Overview</h2>
+    <!-- Results Column -->
+    <div class="results-col">
 
-      <div class="grid grid-cols-3 gap-4">
-        <div class="bg-seashell p-4 rounded-xl">
-          <p class="text-sm">Match Score</p>
-          <p class="text-3xl font-semibold mt-2">82%</p>
+      <!-- Empty State -->
+      <div id="empty-state" role="status">
+        <div class="empty-icon">
+          <svg fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 12h6M9 16h6M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/>
+          </svg>
         </div>
-        <div class="bg-seashell p-4 rounded-xl">
-          <p class="text-sm">Missing Skills</p>
-          <p class="text-3xl font-semibold mt-2">3</p>
-        </div>
-        <div class="bg-seashell p-4 rounded-xl">
-          <p class="text-sm">Processing Time</p>
-          <p class="text-3xl font-semibold mt-2">430ms</p>
-        </div>
+        <h3>Awaiting Analysis</h3>
+        <p>Upload a resume and a job description, then click Analyze Resume to see your results.</p>
       </div>
 
-      <!-- Missing Skills -->
-      <div class="mt-6">
-        <h3 class="text-md font-medium mb-2">Skill Gaps</h3>
-        <div class="flex flex-wrap gap-2">
-          <span class="bg-blush text-sm px-3 py-1 rounded-full">Docker</span>
-          <span class="bg-blush text-sm px-3 py-1 rounded-full">FastAPI</span>
-          <span class="bg-blush text-sm px-3 py-1 rounded-full">AWS</span>
-        </div>
+      <!-- Error State -->
+      <div id="error-state" role="alert">
+        <p><strong>Analysis Failed</strong><span id="error-text"></span></p>
       </div>
-    </section>
 
-    <!-- Optimized Resume -->
-    <section class="col-span-12 bg-petal rounded-2xl p-6 shadow-sm mt-2">
-      <div class="flex justify-between items-center mb-3">
-        <h2 class="text-lg font-medium">Optimized Resume</h2>
-        <button class="bg-peach px-4 py-1 rounded-full text-sm">Download</button>
+      <!-- Results -->
+      <div id="results-container">
+
+        <!-- Match Overview -->
+        <section class="panel" aria-label="Match Overview">
+          <h2 class="panel-title">Match Overview</h2>
+
+          <div class="score-grid">
+            <div class="score-card primary">
+              <div class="label">Match Score</div>
+              <div class="value" id="score-val">--%</div>
+            </div>
+            <div class="score-card danger">
+              <div class="label">Missing Skills</div>
+              <div class="value" id="missing-count">--</div>
+            </div>
+            <div class="score-card">
+              <div class="label">Processing Time</div>
+              <div class="value" id="time-val" style="font-size:1.5rem;">--</div>
+            </div>
+          </div>
+
+          <div class="section-label">Skill Gaps</div>
+          <div id="skills-container"></div>
+        </section>
+
+        <!-- Optimized Resume -->
+        <section class="panel" aria-label="Optimized Resume">
+          <h2 class="panel-title">Optimized Resume</h2>
+          <div class="resume-box" id="optimized-resume-text">--</div>
+        </section>
+
       </div>
-      <div class="bg-white rounded-xl p-4 text-sm leading-relaxed max-h-64 overflow-y-auto">
-        <p>
-          Experienced Machine Learning Engineer with strong expertise in Python,
-          FastAPI, and data‑driven systems. Proven ability to design scalable ML
-          pipelines and deploy production‑ready services...
-        </p>
-      </div>
-    </section>
+    </div>
 
   </main>
 
+  <footer>SkillLens &mdash; AI-powered ATS Resume Analyzer</footer>
+
   <script>
-    const analyzeBtn = document.querySelector("button");
-    const resumeInput = document.querySelectorAll("input[type='file']")[0];
-    const jdInput = document.querySelectorAll("input[type='file']")[1];
+    const analyzeBtn  = document.getElementById("analyze-btn");
+    const btnText     = document.getElementById("btn-text");
+    const spinner     = document.getElementById("spinner");
+    const resumeInput = document.getElementById("resume-file");
+    const jdInput     = document.getElementById("jd-file");
+    const resumeDrop  = document.getElementById("resume-drop");
+    const jdDrop      = document.getElementById("jd-drop");
+    const resumeLabel = document.getElementById("resume-label");
+    const jdLabel     = document.getElementById("jd-label");
+
+    const emptyState       = document.getElementById("empty-state");
+    const errorState       = document.getElementById("error-state");
+    const errorText        = document.getElementById("error-text");
+    const resultsContainer = document.getElementById("results-container");
+
+    function updateFileLabel(input, drop, label) {
+      if (input.files[0]) {
+        label.textContent = input.files[0].name;
+        drop.classList.add("has-file");
+      }
+    }
+
+    resumeInput.addEventListener("change", () => updateFileLabel(resumeInput, resumeDrop, resumeLabel));
+    jdInput.addEventListener("change",     () => updateFileLabel(jdInput, jdDrop, jdLabel));
+
+    // Drag & drop
+    [resumeDrop, jdDrop].forEach(drop => {
+      drop.addEventListener("dragover", e => { e.preventDefault(); drop.classList.add("has-file"); });
+      drop.addEventListener("dragleave", () => { if (!drop.querySelector('input').files[0]) drop.classList.remove("has-file"); });
+      drop.addEventListener("drop", e => {
+        e.preventDefault();
+        const input = drop.querySelector('input[type="file"]');
+        if (e.dataTransfer.files[0]) {
+          const dt = new DataTransfer();
+          dt.items.add(e.dataTransfer.files[0]);
+          input.files = dt.files;
+          input.dispatchEvent(new Event('change'));
+        }
+      });
+    });
 
     analyzeBtn.addEventListener("click", async () => {
       if (!resumeInput.files[0] || !jdInput.files[0]) {
-        alert("Please upload both Resume and Job Description");
+        alert("Please upload both a Resume and a Job Description file.");
         return;
       }
 
@@ -118,42 +506,62 @@
       formData.append("resume", resumeInput.files[0]);
       formData.append("jd", jdInput.files[0]);
 
-      analyzeBtn.innerText = "Analyzing...";
+      // Loading state
+      btnText.textContent = "Analyzing...";
+      spinner.style.display = "block";
       analyzeBtn.disabled = true;
 
+      emptyState.classList.remove("hidden");
+      errorState.style.display = "none";
+      resultsContainer.style.display = "none";
+
       try {
-        const response = await fetch("http://localhost:8000/analyze-files", {
+        const response = await fetch("http://127.0.0.1:8000/analyze-files", {
           method: "POST",
           body: formData
         });
 
-        if (!response.ok) throw new Error("Analysis failed");
+        if (!response.ok) {
+          const err = await response.json().catch(() => ({ detail: response.statusText }));
+          throw new Error(err.detail || response.statusText);
+        }
 
         const data = await response.json();
 
-        // Update UI
-        document.querySelector(".text-3xl").innerText = `${Math.round(data.score.overall || 0)}%`;
-        document.querySelectorAll(".text-3xl")[1].innerText = data.missing_skills.length;
-        document.querySelectorAll(".text-3xl")[2].innerText = `${data.processing_time_ms}ms`;
+        // Show results
+        emptyState.classList.add("hidden");
+        resultsContainer.style.display = "flex";
 
-        const skillsContainer = document.querySelector(".flex.flex-wrap");
+        document.getElementById("score-val").textContent      = `${Math.round(data.score.overall || 0)}%`;
+        document.getElementById("missing-count").textContent  = data.missing_skills.length;
+        document.getElementById("time-val").textContent       = `${data.processing_time_ms}ms`;
+
+        const skillsContainer = document.getElementById("skills-container");
         skillsContainer.innerHTML = "";
-        data.missing_skills.forEach(skill => {
-          const span = document.createElement("span");
-          span.className = "bg-blush text-sm px-3 py-1 rounded-full";
-          span.innerText = skill;
-          skillsContainer.appendChild(span);
-        });
+        if (data.missing_skills.length === 0) {
+          skillsContainer.innerHTML = '<span style="font-size:0.82rem;color:var(--subtle);font-style:italic;">No skill gaps detected.</span>';
+        } else {
+          data.missing_skills.forEach(skill => {
+            const pill = document.createElement("span");
+            pill.className = "skill-pill";
+            pill.textContent = skill;
+            skillsContainer.appendChild(pill);
+          });
+        }
 
-        document.querySelector(".bg-white p").innerText = data.optimized_resume;
+        document.getElementById("optimized-resume-text").textContent = data.optimized_resume;
 
       } catch (err) {
-        alert(err.message);
+        emptyState.classList.add("hidden");
+        errorText.textContent = " " + err.message;
+        errorState.style.display = "block";
       } finally {
-        analyzeBtn.innerText = "Analyze Resume";
+        btnText.textContent = "Analyze Resume";
+        spinner.style.display = "none";
         analyzeBtn.disabled = false;
       }
     });
   </script>
+
 </body>
 </html>

@@ -13,14 +13,22 @@ def find_missing_skills(resume_structured, jd_structured):
     engine = SkillInferenceEngine(graph)
 
     observed = resume_structured.get("skills", [])
-    required = jd_structured.get("skills", [])
+
+    # JD schema uses "required_skills" and "preferred_skills", not "skills"
+    required = (
+        jd_structured.get("required_skills", []) +
+        jd_structured.get("preferred_skills", [])
+    )
 
     inferred = engine.infer_parent_skills(observed)
     inferred.update(engine.soft_infer_skills(observed))
 
+    observed_set = set(s.lower() for s in observed)
+    inferred_set = set(s.lower() for s in inferred)
+
     missing = [
         skill for skill in required
-        if skill not in observed and skill not in inferred
+        if skill.lower() not in observed_set and skill.lower() not in inferred_set
     ]
 
     return missing

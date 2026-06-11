@@ -8,7 +8,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.append(str(PROJECT_ROOT))
 
 from embeddings.domain_embeddings.embedder import embed_text
-from pinecone_client import index
+from retrieval.rag_pipeline.pinecone_client import index
 
 
 def index_chunks(chunks, namespace, metadata_type):

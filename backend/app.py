@@ -1,5 +1,6 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, HTMLResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from pathlib import Path
 import tempfile
@@ -10,15 +11,26 @@ from extraction.text_extractor import extract_text
 from pipeline.run_pipeline import run_pipeline
 from backend.schemas import ATSResponse
 
+FRONTEND_DIR = Path(__file__).resolve().parents[1] / "frontend"
+
 # ---------------- app ----------------
 app = FastAPI(title="LLM-RAG ATS")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # dev only
-    allow_credentials=True,
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Serve frontend at /ui/* and redirect root to it
+app.mount("/ui", StaticFiles(directory=str(FRONTEND_DIR), html=True), name="frontend")
+
+
+@app.get("/", response_class=HTMLResponse, include_in_schema=False)
+def serve_index():
+    """Redirect root to the frontend index.html."""
+    return FileResponse(str(FRONTEND_DIR / "index.html"))
 
 
 # ---------------- request schema (text-based) ----------------
@@ -101,7 +113,10 @@ def analyze_files(
             )
 
         # ---------- call pipeline ----------
-        result = run_pipeline(resume_text, jd_text)
+        try:
+            result = run_pipeline(resume_text, jd_text)
+        except RuntimeError as e:
+            raise HTTPException(status_code=503, detail=str(e))
 
         processing_time_ms = int((time.time() - start_time) * 1000)
 

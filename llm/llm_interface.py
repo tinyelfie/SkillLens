@@ -1,37 +1,46 @@
-from transformers import AutoTokenizer, AutoModelForCausalLM
-import torch
+import os
+from google import genai
+from dotenv import load_dotenv
+from pathlib import Path
 
-MODEL_NAME = "Qwen/Qwen2.5-7B-Instruct"  # or your model
-
-_tokenizer = None
-_model = None
+_client = None
 
 
-def _load_model():
-    global _tokenizer, _model
+def _load_client():
+    global _client
 
-    if _model is None:
-        print("🔵 Loading LLM (one time only)...")
+    if _client is None:
+        # Load env variables if not already loaded by caller
+        ENV_PATH = Path(__file__).resolve().parents[1] / ".env"
+        load_dotenv(dotenv_path=ENV_PATH, override=True)
 
-        _tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
-        _model = AutoModelForCausalLM.from_pretrained(MODEL_NAME)
+        api_key = os.getenv("GEMINI_API_KEY")
+        if not api_key:
+            raise ValueError("GEMINI_API_KEY environment variable not set")
 
-        _model.eval()
+        _client = genai.Client(api_key=api_key)
 
-    return _tokenizer, _model
+    return _client
 
 
 def call_llm(prompt: str, temperature: float = 0.0, max_new_tokens: int = 512):
-    tokenizer, model = _load_model()
+    client = _load_client()
 
-    inputs = tokenizer(prompt, return_tensors="pt")
-
-    with torch.no_grad():
-        outputs = model.generate(
-            **inputs,
-            max_new_tokens=max_new_tokens,
-            do_sample=temperature > 0,
-            temperature=temperature if temperature > 0 else None
+    try:
+        response = client.models.generate_content(
+            model="gemini-2.0-flash-lite",
+            contents=prompt,
+            config=genai.types.GenerateContentConfig(
+                temperature=temperature,
+                max_output_tokens=max_new_tokens,
+            ),
         )
-
-    return tokenizer.decode(outputs[0], skip_special_tokens=True)
+        return response.text
+    except Exception as e:
+        msg = str(e)
+        if "429" in msg or "RESOURCE_EXHAUSTED" in msg:
+            raise RuntimeError(
+                "Gemini API quota exceeded. Please wait a minute and try again, "
+                "or check your quota at https://ai.dev/rate-limit"
+            ) from e
+        raise

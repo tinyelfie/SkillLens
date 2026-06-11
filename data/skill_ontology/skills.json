@@ -1,0 +1,20 @@
+{
+  "PyTorch": ["Deep Learning"],
+  "TensorFlow": ["Deep Learning"],
+  "CNN": ["Deep Learning"],
+  "RNN": ["Deep Learning"],
+  "Transformers": ["Deep Learning"],
+  "Deep Learning": ["Machine Learning"],
+  "Machine Learning": ["Artificial Intelligence"],
+  "SQL": ["Databases"],
+  "PostgreSQL": ["Databases"],
+  "Databases": ["Backend Engineering"],
+  "FastAPI": ["Backend Engineering"],
+  "REST APIs": ["Backend Engineering"],
+  "Python": ["Programming"],
+  "Programming": ["Software Engineering"],
+
+  "AI": ["Artificial Intelligence"],
+
+  "Disaster Intelligence": ["Artificial Intelligence"]
+}

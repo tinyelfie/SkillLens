@@ -1,5 +1,5 @@
 from embeddings.domain_embeddings.embedder import embed_text
-from similarity import cosine_similarity
+from matching.ranking_scoring.similarity import cosine_similarity
 
 
 def build_skill_match_features(resume_skills, jd_skills):

@@ -1,4 +1,5 @@
 import json
+import re
 from llm.llm_interface import call_llm
 from parsing.resume_jd_structuring.prompts import (
     RESUME_EXTRACTION_PROMPT,
@@ -12,8 +13,9 @@ def extract_resume_structure(resume_text: str) -> dict:
 
     try:
         return extract_json(response)
-    except json.JSONDecodeError:
+    except (json.JSONDecodeError, ValueError):
         raise ValueError("LLM failed to return valid JSON for resume")
+
 
 def extract_jd_structure(jd_text: str) -> dict:
     prompt = JD_EXTRACTION_PROMPT.format(jd_text=jd_text)
@@ -21,18 +23,18 @@ def extract_jd_structure(jd_text: str) -> dict:
 
     try:
         return extract_json(response)
-    except json.JSONDecodeError:
+    except (json.JSONDecodeError, ValueError):
         raise ValueError("LLM failed to return valid JSON for JD")
 
-import re
-
-import json
-import re
 
 def extract_json(text: str) -> dict:
     """
-    Robust JSON extraction from LLM output
+    Robust JSON extraction from LLM output.
+    Handles markdown fences, leading text, and trailing commas.
     """
+    # Strip markdown code fences if present
+    text = re.sub(r"```(?:json)?", "", text)
+
     # Find first { and last }
     start = text.find("{")
     end = text.rfind("}")

@@ -1,0 +1,39 @@
+# -------------------------------------------------------------------------
+# IGNORE THESE FILES (Never upload them to GitHub)
+# -------------------------------------------------------------------------
+
+# 1. Environment and Secrets
+.env
+.env.*
+
+# 2. Python Virtual Environments & Caches
+venv/
+env/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# 3. Personal Resumes, PDFs, and Job Descriptions
+# This guarantees no resumes or JDs are EVER uploaded
+*.pdf
+*.docx
+*.doc
+
+
+# 4. Intermediate Outputs & Local Databases
+# (These are generated when you run the pipeline locally)
+resume_text.txt
+jd_text.txt
+resume_structured.json
+jd_structured.json
+last_score.json
+output_resume.txt
+
+# 5. ChromaDB local storage (if you ran the vector store locally)
+chroma_db/
+resume_jd_embeddings/
+
+# 6. Excluded Documentation
+TECHNICAL_REPORT.md
+HOW_TO_RUN.md
+reading_guide.md

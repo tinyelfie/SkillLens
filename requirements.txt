@@ -38,3 +38,4 @@ sentence-transformers
 chromadb>=0.4.22
 pinecone-client>=3.0.0
 networkx>=3.2.1
+google-genai
