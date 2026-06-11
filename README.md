@@ -31,10 +31,6 @@ It moves beyond simple keyword matching to evaluate true semantic competency ali
    ```
 5. **Access the Application:** Navigate to `http://127.0.0.1:8000` in your browser.
 
-## Documentation
-- Read `TECHNICAL_REPORT.md` for a deep dive into the ATS keywords, ML technologies, and system architecture.
-- Read `reading_guide.md` for a sequential, file-by-file walkthrough of the entire codebase and its logic.
-- Read `HOW_TO_RUN.md` for detailed troubleshooting and setup instructions.
 
 ## Repository Structure
 - `backend/`: FastAPI application and routing.
